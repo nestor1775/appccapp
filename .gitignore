@@ -1,0 +1,49 @@
+# Entorno virtual
+venv/
+
+# Archivos de base de datos
+*.sqlite3
+*.db
+
+# Archivos de configuración de PyCharm/VSCode
+.idea/
+.vscode/
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos temporales
+*.log
+*.pot
+*.pyc
+*.pyo
+*.~
+.DS_Store
+Thumbs.db
+
+# Archivos de migraciones innecesarios
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/__pycache__/
+
+# Archivos de entorno
+.env
+.env.*
+
+# Archivos de coverage y testing
+htmlcov/
+.coverage
+.tox/
+.nox/
+
+# Archivos de paquetes
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Otros
+*.bak
+*.swp 
