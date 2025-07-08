@@ -1,12 +1,17 @@
 from django.contrib import admin
 from .models import User, Vessel, UserVessel, Room, PredefinedMessage, Guest, Task
+from .models.user import Device
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'role', 'specialty', 'is_staff')
+    list_display = ('username', 'email', 'role', 'specialty', 'is_staff', 'device_tokens')
     list_filter = ('role', 'is_staff', 'is_active')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('username',)
+
+    def device_tokens(self, obj):
+        return ', '.join([d.token for d in obj.devices.all()])
+    device_tokens.short_description = 'Device Tokens'
 
 @admin.register(Vessel)
 class VesselAdmin(admin.ModelAdmin):
@@ -49,4 +54,10 @@ class Task(admin.ModelAdmin):
     list_display = ('predefined_message', 'status', 'creation_date', 'completion_date', 'assigned', 'creator', 'vessel')
     search_fields = ('predefined_message', 'assigned__username', 'creator__username', 'vessel__name')
     list_filter = ('status', 'vessel')
+
+@admin.register(Device)
+class DeviceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'token', 'platform', 'last_seen')
+    search_fields = ('user__username', 'token', 'platform')
+    list_filter = ('platform',)
 

@@ -6,7 +6,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['predefined_message', 'assigned', 'room']
+        fields = ['predefined_message', 'assigned', 'room', 'status']
 
     def validate(self, data):
         request = self.context['request']

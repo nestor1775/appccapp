@@ -10,4 +10,4 @@ class PredefinedMessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PredefinedMessage
-        fields = ['vessel', 'type', 'content']
+        fields = ['id', 'vessel', 'type', 'content']

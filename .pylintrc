@@ -1,0 +1,39 @@
+[MASTER]
+# Add Django to the Python path
+init-hook='import sys; sys.path.append(".")'
+
+[MESSAGES CONTROL]
+# Disable some warnings that are common in Django projects
+disable=C0114,C0115,C0116,R0903,R0913,W0621,W0611,W0612,W0613,W0703
+
+[REPORTS]
+# Set the output format
+output-format=text
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+[BASIC]
+# Regular expression which should only match function or class names
+good-names=i,j,k,ex,Run,_,id,db
+
+[MISCELLANEOUS]
+# List of note tags to take into consideration
+notes=
+
+[SIMILARITIES]
+# Minimum lines number of a similarity
+min-similarity-lines=4
+# Ignore imports when computing similarities
+ignore-imports=yes
+
+[TYPECHECK]
+# List of module names for which member attributes should not be checked
+ignored-modules=django.db.models,django.contrib,django.utils,rest_framework,rest_framework_simplejwt,corsheaders
+
+# List of classes names for which member attributes should not be checked
+ignored-classes=SQLObject,RelatedManager,Manager,QuerySet
+
+# List of members which are set dynamically and missed by pylint inference
+generated-members=REQUEST,acl_users,aq_parent,"[a-zA-Z]+_set{1,2}",save,delete 

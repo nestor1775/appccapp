@@ -7,8 +7,9 @@ from .views import (
     PredefinedMessageRegisterView, PredefinedMessageListView, PredefinedMessageDetailView,
     GuestRegisterView, GuestListView, GuestDetailView,
     VesselListView, VesselDetailView,
-    TaskCreateView, TaskListView, TaskDetailView
+    TaskCreateView, TaskListView, TaskDetailView,
 )
+from .views.vessel_views import MyJoinRequestsView
 
 urlpatterns = [
     # Auth
@@ -30,6 +31,7 @@ urlpatterns = [
     path('vessels/join/', JoinVesselRequestView.as_view(), name='join-vessel'),
     path('vessels/join-request/<int:user_vessel_id>/action/', AproveJoinRequestView.as_view(), name='approve-join-request'),
     path('vessels/<str:vessel_code>/pending-requests/', PendingJoinRequestsView.as_view(), name='pending-join-requests'),
+    path('vessels/my-join-requests/', MyJoinRequestsView.as_view(), name='my-join-requests'),
 
     # Rooms
     path('rooms/', RoomView.as_view(), name='room-list-by-vessel'),  # Considera cambiar a RoomListView si lo implementas

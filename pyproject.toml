@@ -1,0 +1,39 @@
+[tool.pylsp-mypy]
+enabled = true
+strict = false
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+# Django specific settings
+plugins = ["mypy_django_plugin"]
+
+[tool.django-stubs]
+django_settings_module = "crewcall.settings"
+
+[[tool.mypy.overrides]]
+module = [
+    "django.*",
+    "django.db.models.*",
+    "django.contrib.*",
+    "rest_framework.*",
+    "rest_framework_simplejwt.*",
+    "corsheaders.*",
+    "api.*",
+    "api.models.*",
+    "api.views.*",
+    "api.serializers.*",
+]
+ignore_missing_imports = true 

@@ -4,7 +4,8 @@ from rest_framework import status
 from ..serializers.message_serializers import PredefinedMessageSerializer
 from rest_framework.permissions import IsAuthenticated
 from ..models import PredefinedMessage, Vessel, UserVessel
-from ..permissions import IsAdmin
+from ..permissions import IsAdmin, IsAuthenticatedOrGuestWithToken, IsAdminOrWorker
+from ..models.guest import Guest
 
 class PredefinedMessageRegisterView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
@@ -17,19 +18,26 @@ class PredefinedMessageRegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PredefinedMessageListView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticatedOrGuestWithToken]
 
     def get(self, request):
-        try:
-            vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
-        except UserVessel.DoesNotExist:
-            return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
+        vessel = None
+        if request.user.is_authenticated:
+            user_vessel = UserVessel.objects.filter(user=request.user, status='active').first()
+            if user_vessel:
+                vessel = user_vessel.vessel
+        elif hasattr(request, 'guest'):
+            vessel = request.guest.vessel
+
+        if not vessel:
+            return Response({'error': 'No vessel found.'}, status=status.HTTP_403_FORBIDDEN)
+
         messages = PredefinedMessage.objects.filter(vessel=vessel)
         serializer = PredefinedMessageSerializer(messages, many=True)
         return Response(serializer.data)
 
 class PredefinedMessageDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdminOrWorker]
 
     def get(self, request, message_id):
         try:
@@ -37,10 +45,11 @@ class PredefinedMessageDetailView(APIView):
         except PredefinedMessage.DoesNotExist:
             return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
         try:
-            vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+            user_vessel = UserVessel.objects.filter(user=request.user, status='active').first()
+            vessel = user_vessel.vessel if user_vessel else None
         except UserVessel.DoesNotExist:
             return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
-        if message.vessel != vessel:
+        if not vessel or message.vessel != vessel:
             return Response({'error': 'Not allowed to access this message.'}, status=status.HTTP_403_FORBIDDEN)
         serializer = PredefinedMessageSerializer(message)
         return Response(serializer.data)
@@ -51,10 +60,11 @@ class PredefinedMessageDetailView(APIView):
         except PredefinedMessage.DoesNotExist:
             return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
         try:
-            vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+            user_vessel = UserVessel.objects.filter(user=request.user, status='active').first()
+            vessel = user_vessel.vessel if user_vessel else None
         except UserVessel.DoesNotExist:
             return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
-        if message.vessel != vessel:
+        if not vessel or message.vessel != vessel:
             return Response({'error': 'Not allowed to update this message.'}, status=status.HTTP_403_FORBIDDEN)
         serializer = PredefinedMessageSerializer(message, data=request.data, partial=True)
         if serializer.is_valid():
@@ -68,10 +78,11 @@ class PredefinedMessageDetailView(APIView):
         except PredefinedMessage.DoesNotExist:
             return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
         try:
-            vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+            user_vessel = UserVessel.objects.filter(user=request.user, status='active').first()
+            vessel = user_vessel.vessel if user_vessel else None
         except UserVessel.DoesNotExist:
             return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
-        if message.vessel != vessel:
+        if not vessel or message.vessel != vessel:
             return Response({'error': 'Not allowed to delete this message.'}, status=status.HTTP_403_FORBIDDEN)
         message.delete()
         return Response({'message': 'Message deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)

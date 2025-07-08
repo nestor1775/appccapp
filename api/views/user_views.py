@@ -5,7 +5,8 @@ from ..serializers.user_serializers import RegisterSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from ..models import User
 from ..models.vessel import UserVessel
-from ..permissions import IsAdmin
+from ..permissions import IsAdmin, IsAuthenticatedOrGuestWithToken
+from ..models.user import Device
 
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -36,7 +37,7 @@ class UserListView(APIView):
         return Response(serializer.data)
 
 class WorkerListView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticatedOrGuestWithToken]
 
     def get(self, request):
         try:
@@ -116,4 +117,19 @@ class UserProfileView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterDeviceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        token = request.data.get('token')
+        platform = request.data.get('platform')
+        if not token or not platform:
+            return Response({'error': 'Token and platform are required.'}, status=400)
+        device, created = Device.objects.update_or_create(
+            user=request.user,
+            token=token,
+            defaults={'platform': platform}
+        )
+        return Response({'message': 'Device registered successfully.'}) 

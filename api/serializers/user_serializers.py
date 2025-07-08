@@ -1,13 +1,28 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from api.models.vessel import UserVessel, Vessel
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    vessel = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'specialty', 'date_joined', 'last_login']
+        fields = ['id', 'username', 'email', 'role', 'specialty', 'date_joined', 'last_login', 'vessel']
         read_only_fields = ['date_joined', 'last_login']
+
+    def get_vessel(self, obj):
+        user_vessel = UserVessel.objects.filter(user=obj, status='active').first()
+        if not user_vessel:
+            return None
+        vessel = user_vessel.vessel
+        return {
+            'id': vessel.id,
+            'name': vessel.name,
+            'unique_code': vessel.unique_code,
+            'is_primary': user_vessel.is_primary
+        }
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -24,12 +39,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = User.objects.create_user(
+        specialty = validated_data.get('specialty', None)
+        user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password'],
             role=validated_data['role'],
-            specialty=validated_data.get('specialty', ''),
+            specialty=specialty,
         )
+        user.set_password(validated_data['password'])
+        user.save()
         return user 
 

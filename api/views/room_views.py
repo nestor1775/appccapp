@@ -13,7 +13,7 @@ class RoomView(APIView):
         # Si unique_code no se usa, obtener vessel del usuario
         if request.user.is_authenticated:
             try:
-                vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+                vessel = UserVessel.objects.get(user=request.user, status='active').vessel
             except UserVessel.DoesNotExist:
                 return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
             rooms = Room.objects.filter(vessel=vessel)
@@ -42,7 +42,7 @@ class RoomDetailView(APIView):
             return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
         if request.user.is_authenticated:
             try:
-                vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+                vessel = UserVessel.objects.get(user=request.user, status='active').vessel
             except UserVessel.DoesNotExist:
                 return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
             if room.vessel != vessel:

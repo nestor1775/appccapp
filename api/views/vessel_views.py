@@ -26,15 +26,16 @@ class RegisterVesselView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
 class JoinVesselRequestView(APIView):
-    permission_classes= [IsAuthenticated, IsWorker]
+    permission_classes= [IsAuthenticated]
 
     def post(self, request):
         serializer= JoinVesselSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
+            user_role = 'admin' if request.user.role == 'admin' else 'worker'
             UserVessel.objects.create(
                 user=request.user,
                 vessel=serializer.validated_data['vessel'],
-                role_in_vessel='worker',
+                role_in_vessel=user_role,
                 status='pending',
                 is_primary=False 
             )
@@ -134,3 +135,20 @@ class VesselDetailView(APIView):
             return Response({'error': 'Not allowed to delete this vessel.'}, status=status.HTTP_403_FORBIDDEN)
         vessel.delete()
         return Response({'message': 'Vessel deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+class MyJoinRequestsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        join_requests = UserVessel.objects.filter(user=request.user)
+        data = [
+            {
+                "vessel": VesselSerializer(uv.vessel).data,
+                "status": uv.status,
+                "role_in_vessel": uv.role_in_vessel,
+                "requested_at": getattr(uv, 'created_at', None),
+                "is_primary": getattr(uv, 'is_primary', None),
+            }
+            for uv in join_requests
+        ]
+        return Response(data, status=status.HTTP_200_OK)
