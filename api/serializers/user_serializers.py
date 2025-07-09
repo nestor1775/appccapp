@@ -21,7 +21,9 @@ class UserSerializer(serializers.ModelSerializer):
             'id': vessel.id,
             'name': vessel.name,
             'unique_code': vessel.unique_code,
+            'guest_pin': vessel.guest_pin,
             'is_primary': user_vessel.is_primary
+
         }
 
 class RegisterSerializer(serializers.ModelSerializer):
