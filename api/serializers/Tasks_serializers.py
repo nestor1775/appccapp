@@ -3,10 +3,35 @@ from api.models import Task, Guest, User, PredefinedMessage, Room, UserVessel
 
 class TaskCreateSerializer(serializers.ModelSerializer):
     room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all(), required=True)
+    
+    # Campos de solo lectura para la respuesta
+    id = serializers.IntegerField(read_only=True)
+    message = serializers.CharField(source='predefined_message.content', read_only=True)
+    assigned_username = serializers.CharField(source='assigned.username', read_only=True)
+    room_name = serializers.CharField(source='room.name', read_only=True)
+    creator_name = serializers.SerializerMethodField(read_only=True)
+    creation_date = serializers.DateTimeField(read_only=True)
+    completion_date = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Task
-        fields = ['predefined_message', 'assigned', 'room', 'status']
+        fields = [
+            'id',
+            'predefined_message', 'message',
+            'assigned', 'assigned_username',
+            'room', 'room_name',
+            'status',
+            'creator_name',
+            'creation_date',
+            'completion_date'
+        ]
+        
+    def get_creator_name(self, obj):
+        if obj.creator:
+            return obj.creator.username
+        elif hasattr(obj, 'guest') and obj.guest:
+            return obj.guest.name
+        return None
 
     def validate(self, data):
         request = self.context['request']
