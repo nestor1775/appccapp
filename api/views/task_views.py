@@ -94,7 +94,7 @@ class TaskDetailView(APIView):
             if request.user.role == 'worker' and task.assigned != request.user:
                 return Response({'error': 'You can only update your own tasks.'}, status=status.HTTP_403_FORBIDDEN)
                 
-        serializer = TaskCreateSerializer(task, data=request.data, partial=True)
+        serializer = TaskCreateSerializer(task, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             # Set completion_date when status is updated to 'completed'
             if 'status' in request.data and request.data['status'] == 'completed' and not task.completion_date:
