@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'specialty', 'date_joined', 'last_login', 'vessel']
+        fields = ['id', 'username', 'email', 'role', 'specialty', 'date_joined', 'last_login', 'vessel', 'profile_url']
         read_only_fields = ['date_joined', 'last_login']
 
     def get_vessel(self, obj):

@@ -4,7 +4,7 @@ from .models.user import Device
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'role', 'specialty', 'is_staff', 'device_tokens')
+    list_display = ('username', 'email', 'role', 'specialty', 'is_staff', 'device_tokens', 'profile_url')
     list_filter = ('role', 'is_staff', 'is_active')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('username',)

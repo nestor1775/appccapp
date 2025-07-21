@@ -8,6 +8,7 @@ from .views import (
     GuestRegisterView, GuestListView, GuestDetailView,
     VesselListView, VesselDetailView,
     TaskCreateView, TaskListView, TaskDetailView,
+    RegisterDeviceView,
 )
 from .views.vessel_views import MyJoinRequestsView
 
@@ -42,6 +43,9 @@ urlpatterns = [
     path('tasks/', TaskListView.as_view(), name='task-list'),
     path('tasks/create/', TaskCreateView.as_view(), name='task-create'),
     path('tasks/<int:task_id>/', TaskDetailView.as_view(), name='task-detail'),
+    
+    # Device Registration
+    path('devices/register/', RegisterDeviceView.as_view(), name='register-device'),
 
     # Predefined Messages
     path('messages/', PredefinedMessageListView.as_view(), name='predefined-message-list'),

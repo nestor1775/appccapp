@@ -79,6 +79,7 @@ class TaskDetailView(APIView):
             task = Task.objects.get(id=task_id)
         except Task.DoesNotExist:
             return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+            
         if request.user.is_authenticated:
             has_access = UserVessel.objects.filter(
                 user=request.user,
@@ -89,12 +90,20 @@ class TaskDetailView(APIView):
             if not has_access:
                 return Response({'error': 'Not allowed to update this task.'}, status=status.HTTP_403_FORBIDDEN)
 
-            if request.user.role == 'worker':
-                return Response({'error': 'Workers cannot modify tasks.'}, status=status.HTTP_403_FORBIDDEN)
+            # Allow workers to update only their own tasks
+            if request.user.role == 'worker' and task.assigned != request.user:
+                return Response({'error': 'You can only update your own tasks.'}, status=status.HTTP_403_FORBIDDEN)
+                
         serializer = TaskCreateSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
+            # Set completion_date when status is updated to 'completed'
+            if 'status' in request.data and request.data['status'] == 'completed' and not task.completion_date:
+                from django.utils import timezone
+                serializer.validated_data['completion_date'] = timezone.now()
+                
             serializer.save()
             return Response(serializer.data)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, task_id):

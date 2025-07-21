@@ -1,4 +1,4 @@
-from .user_views import RegisterView, UserListView, UserDetailView, UserProfileView, WorkerListView, WorkerDetailView
+from .user_views import RegisterView, UserListView, UserDetailView, UserProfileView, WorkerListView, WorkerDetailView, RegisterDeviceView
 from .vessel_views import RegisterVesselView, JoinVesselRequestView,  PendingJoinRequestsView, AproveJoinRequestView, VesselListView, VesselDetailView
 from .room_views import RoomView, RoomRegisterView, RoomDetailView
 from .message_views import PredefinedMessageRegisterView, PredefinedMessageListView, PredefinedMessageDetailView
@@ -30,4 +30,5 @@ __all__ = [
     'TaskCreateView',
     'TaskListView',
     'TaskDetailView',
+    'RegisterDeviceView',
 ] 

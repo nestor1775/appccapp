@@ -10,6 +10,9 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROL_CHOICES)
     specialty = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(unique=True)
+    profile_url = models.URLField(null=True, blank=True)
+    
+    
 
     def __str__(self):
         return f"{self.username} ({self.role})" 

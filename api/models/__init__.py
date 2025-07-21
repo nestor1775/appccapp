@@ -1,4 +1,4 @@
-from .user import User
+from .user import User, Device
 from .vessel import Vessel, UserVessel
 from .room import Room
 from .message import PredefinedMessage
@@ -13,4 +13,5 @@ __all__ = [
     'PredefinedMessage',
     'Guest',
     'Task',
+    'Device',
 ] 
