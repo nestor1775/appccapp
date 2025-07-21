@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..serializers import TaskCreateSerializer
+from ..serializers.Tasks_serializers import TaskCreateSerializer, TaskUpdateSerializer
 from ..permissions import IsAuthenticatedOrGuestWithToken, IsWorker
 from ..models import Task, UserVessel
 
@@ -94,13 +94,13 @@ class TaskDetailView(APIView):
             if request.user.role == 'worker' and task.assigned != request.user:
                 return Response({'error': 'You can only update your own tasks.'}, status=status.HTTP_403_FORBIDDEN)
                 
-        serializer = TaskCreateSerializer(task, data=request.data, partial=True, context={'request': request})
+        serializer = TaskUpdateSerializer(
+            task, 
+            data=request.data, 
+            partial=True,
+            context={'request': request}
+        )
         if serializer.is_valid():
-            # Set completion_date when status is updated to 'completed'
-            if 'status' in request.data and request.data['status'] == 'completed' and not task.completion_date:
-                from django.utils import timezone
-                serializer.validated_data['completion_date'] = timezone.now()
-                
             serializer.save()
             return Response(serializer.data)
             

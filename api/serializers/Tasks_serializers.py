@@ -87,3 +87,22 @@ class TaskCreateSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return task
+
+
+class TaskUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['status']
+        read_only_fields = ['id', 'predefined_message', 'assigned', 'room', 'creator', 'guest', 'vessel', 'creation_date', 'completion_date']
+    
+    def update(self, instance, validated_data):
+        # Actualiza el estado
+        instance.status = validated_data.get('status', instance.status)
+        
+        # Si se marca como completado y no tiene fecha de finalización, la establecemos
+        if instance.status == 'completed' and not instance.completion_date:
+            from django.utils import timezone
+            instance.completion_date = timezone.now()
+            
+        instance.save()
+        return instance
