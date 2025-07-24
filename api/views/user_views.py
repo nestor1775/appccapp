@@ -128,8 +128,14 @@ class RegisterDeviceView(APIView):
         if not token or not platform:
             return Response({'error': 'Token and platform are required.'}, status=400)
         device, created = Device.objects.update_or_create(
-            user=request.user,
+            #user=request.user,
             token=token,
-            defaults={'platform': platform}
+            defaults={
+                'user': request.user,
+                'platform': platform
+                }
         )
         return Response({'message': 'Device registered successfully.'}) 
+
+
+
