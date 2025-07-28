@@ -40,10 +40,20 @@ class WorkerListView(APIView):
     permission_classes = [IsAuthenticatedOrGuestWithToken]
 
     def get(self, request):
-        try:
-            vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
-        except UserVessel.DoesNotExist:
-            return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
+        vessel = None
+        
+        # Para usuarios autenticados
+        if request.user.is_authenticated:
+            try:
+                vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+            except UserVessel.DoesNotExist:
+                return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
+        # Para invitados
+        elif hasattr(request, 'guest'):
+            vessel = request.guest.vessel
+        else:
+            return Response({'error': 'Authentication or guest token required.'}, status=status.HTTP_401_UNAUTHORIZED)
+            
         workers = User.objects.filter(role='worker', uservessel__vessel=vessel, uservessel__status='active').distinct()
         serializer = UserSerializer(workers, many=True)
         return Response(serializer.data)

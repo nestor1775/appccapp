@@ -4,21 +4,27 @@ from rest_framework import status
 from ..serializers.room_serializers import RoomSerializer
 from rest_framework.permissions import IsAuthenticated
 from ..models import Room, Vessel, UserVessel
-from ..permissions import IsAdmin
+from ..permissions import IsAdmin, IsAuthenticatedOrGuestWithToken
 
 class RoomView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrGuestWithToken]
 
     def get(self, request, unique_code=None):
-        # Si unique_code no se usa, obtener vessel del usuario
+        vessel = None
+        
+        # Para usuarios autenticados
         if request.user.is_authenticated:
             try:
                 vessel = UserVessel.objects.get(user=request.user, status='active').vessel
             except UserVessel.DoesNotExist:
                 return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
-            rooms = Room.objects.filter(vessel=vessel)
+        # Para invitados
+        elif hasattr(request, 'guest'):
+            vessel = request.guest.vessel
         else:
-            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Authentication or guest token required.'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+        rooms = Room.objects.filter(vessel=vessel)
         serializer = RoomSerializer(rooms, many=True)
         return Response(serializer.data)
     
