@@ -33,7 +33,7 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(PredefinedMessage)
 class PredefinedMessageAdmin(admin.ModelAdmin):
-    list_display = ('type', 'vessel')
+    list_display = ('id', 'type', 'vessel')
     search_fields = ('type', 'vessel__name')
     list_filter = ('type', 'vessel')
 

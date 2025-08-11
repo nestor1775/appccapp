@@ -7,7 +7,7 @@ from .user import User
 from .vessel import Vessel
 
 class Task(models.Model):
-    predefined_message = models.ForeignKey(PredefinedMessage, on_delete=models.PROTECT)
+    predefined_message = models.ForeignKey(PredefinedMessage, on_delete=models.CASCADE)
     guest = models.ForeignKey(Guest, null=True, blank=True, on_delete=models.SET_NULL)
     creator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="created_tasks")
     assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_tasks")
