@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
             'unique_code': vessel.unique_code,
             'guest_pin': vessel.guest_pin,
             'is_primary': user_vessel.is_primary,
-            'logo_url': vessel.logo.url if vessel.logo else None,
+            'logo_url': vessel.logo_url,
 
         }
 
