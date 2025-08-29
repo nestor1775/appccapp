@@ -46,7 +46,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
             if request.user.role != 'admin':
                 raise serializers.ValidationError('Only admins can create tasks.')
             try:
-                creator_vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+                creator_vessel = UserVessel.objects.get(user=request.user, status='active').vessel
             except UserVessel.DoesNotExist:
                 raise serializers.ValidationError("Authenticated user does not have an active primary vessel.")
         elif guest_token:
