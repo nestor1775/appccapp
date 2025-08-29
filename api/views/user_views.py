@@ -15,6 +15,12 @@ class UserView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+    
+    #borrar usuario preview
+    def delete(self, request):
+        user = request.user
+        user.delete()
+        return Response({'message': 'User deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 class RegisterView(APIView):
     def post(self, request):
@@ -45,7 +51,7 @@ class WorkerListView(APIView):
         # Para usuarios autenticados
         if request.user.is_authenticated:
             try:
-                vessel = UserVessel.objects.get(user=request.user, is_primary=True, status='active').vessel
+                vessel = UserVessel.objects.get(user=request.user, status='active').vessel
             except UserVessel.DoesNotExist:
                 return Response({'error': 'No active vessel found.'}, status=status.HTTP_403_FORBIDDEN)
         # Para invitados
