@@ -7,4 +7,4 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         # Importa las señales para que se registren
-        import api.signals  # Asegúrate de que las señales se registren
+        import api.signals 

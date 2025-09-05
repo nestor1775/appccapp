@@ -11,11 +11,14 @@ class User(AbstractUser):
     specialty = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(unique=True)
     profile_url = models.URLField(null=True, blank=True)
+    username = models.CharField(max_length=150, unique=False, null=False, blank=False)
     
-    
+    # Campos requeridos para django-allauth
+    USERNAME_FIELD = 'email'  
+    REQUIRED_FIELDS = ['role']
 
     def __str__(self):
-        return f"{self.username} ({self.role})" 
+        return f"{self.email} ({self.role})" 
 
 class Device(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='devices')

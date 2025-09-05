@@ -41,13 +41,16 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'specialty': 'Specialty is required for workers.'})
         return data
 
-    def create(self, validated_data):
+    def create(self, validated_data, **kwargs):
         specialty = validated_data.get('specialty', None)
+        is_active = kwargs.get('is_active',False)  
+        
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
             role=validated_data['role'],
             specialty=specialty,
+            is_active=is_active,
         )
         user.set_password(validated_data['password'])
         user.save()

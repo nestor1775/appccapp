@@ -14,7 +14,7 @@ class RegisterVesselView(APIView):
         serializer = RegisterVesselSerializer(data=request.data)
         if serializer.is_valid():
             vessel = serializer.save()
-            # Crear la relación UserVessel
+            # Crea la relación UserVessel
             UserVessel.objects.create(
                 user=request.user,
                 vessel=vessel,

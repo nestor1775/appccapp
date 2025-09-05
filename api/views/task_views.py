@@ -57,7 +57,7 @@ class TaskDetailView(APIView):
             return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
 
         if request.user.is_authenticated:
-            # Verificamos que el usuario esté activo en el mismo barco que la tarea
+            # usuario esté activo en el mismo barco que la tarea
             has_access = UserVessel.objects.filter(
                 user=request.user,
                 vessel=task.vessel,
@@ -90,7 +90,7 @@ class TaskDetailView(APIView):
             if not has_access:
                 return Response({'error': 'Not allowed to update this task.'}, status=status.HTTP_403_FORBIDDEN)
 
-            # Allow workers to update only their own tasks
+           
             if request.user.role == 'worker' and task.assigned != request.user:
                 return Response({'error': 'You can only update your own tasks.'}, status=status.HTTP_403_FORBIDDEN)
                 

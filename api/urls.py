@@ -8,15 +8,18 @@ from .views import (
     GuestRegisterView, GuestListView, GuestDetailView,
     VesselListView, VesselDetailView,
     TaskCreateView, TaskListView, TaskDetailView,
-    RegisterDeviceView,
+    RegisterDeviceView, CustomLoginView,ResendConfirmationEmailView, ResetPasswordEmailView
 )
 from .views.vessel_views import MyJoinRequestsView
 
 urlpatterns = [
     # Auth
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login original (sin verificación)// NO la usaremos
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('login/', CustomLoginView.as_view(), name='custom_login'),  # Login con verificación de email // EN uso
     path('register/', RegisterView.as_view(), name='register'),
+    path('resend-confirmation-email/', ResendConfirmationEmailView.as_view(), name='resend-confirmation-email'),
+    path('reset-password/', ResetPasswordEmailView.as_view(), name='reset-password'),
 
     # Users
     path('users/', UserListView.as_view(), name='user-list'),
@@ -35,7 +38,7 @@ urlpatterns = [
     path('vessels/my-join-requests/', MyJoinRequestsView.as_view(), name='my-join-requests'),
 
     # Rooms
-    path('rooms/', RoomView.as_view(), name='room-list-by-vessel'),  # Considera cambiar a RoomListView si lo implementas
+    path('rooms/', RoomView.as_view(), name='room-list-by-vessel'),  
     path('rooms/register/', RoomRegisterView.as_view(), name='register-room'),
     path('rooms/<int:room_id>/', RoomDetailView.as_view(), name='room-detail'),
 

@@ -7,6 +7,9 @@ from ..models import User
 from ..models.vessel import UserVessel
 from ..permissions import IsAdmin, IsAuthenticatedOrGuestWithToken
 from ..models.user import Device
+from api.utils.auth_utils import send_confirmation_email
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -26,8 +29,24 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'user created successfully'}, status=status.HTTP_201_CREATED)
+            # Crear usuario inactivo hasta verificar email
+            user = serializer.save(is_active=False)
+            
+            # Enviar email de verificación
+            try:
+                send_confirmation_email(request, user)
+                
+                return Response({
+                    'message': 'Usuario registrado exitosamente. Por favor verifica tu email antes de iniciar sesión.',
+                    'user_id': user.id
+                }, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                # Si falla el email, mantener usuario inactivo
+                return Response({
+                    'message': 'Usuario registrado exitosamente. Por favor verifica tu email antes de iniciar sesión.',
+                    'warning': 'No se pudo enviar el email de verificación.',
+                    'user_id': user.id
+                }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserListView(APIView):
@@ -151,7 +170,30 @@ class RegisterDeviceView(APIView):
                 'platform': platform
                 }
         )
-        return Response({'message': 'Device registered successfully.'}) 
+        return Response({'message': 'Device registered successfully.'})
 
+
+class CustomLoginView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+
+        password = request.data.get("password")
+
+        if not email or not password:
+            return Response({"error": "Username/email are required."}, status=400)
+
+        user = authenticate(email=email, password=password)
+        if user is None:
+            return Response({"error": "email or password is incorrect."}, status=401)
+
+        if not user.is_active:
+            print("User is not active")
+            return Response({"error": "Please verify your email before logging in."}, status=401)
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        })
 
 

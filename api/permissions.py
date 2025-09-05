@@ -23,7 +23,7 @@ class IsGuest(permissions.BasePermission):
             return False
         try:
             guest = Guest.objects.get(guest_token=guest_token)
-            request.guest = guest  # Lo guardas para poder usarlo luego en la vista
+            request.guest = guest  
             return True
         except Guest.DoesNotExist:
             return False

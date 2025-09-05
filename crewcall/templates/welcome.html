@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block title %}{% trans "Welcome to CrewCall" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto text-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white py-8 px-4 shadow rounded-lg">
+        <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <h2 class="mt-2 text-2xl font-extrabold text-gray-900">
+                {% trans "Email Verified Successfully!" %}
+            </h2>
+            <p class="mt-2 text-gray-600">
+                {% trans "Thank you for verifying your email address. Your account is now active." %}
+            </p>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
